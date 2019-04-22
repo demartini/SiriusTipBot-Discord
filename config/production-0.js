@@ -7,9 +7,10 @@ module.exports = {
     debug: process.env.BOT_DEBUG
   },
   siriusd: {
+    host: process.env.RPC_HOST,
     port: process.env.RPC_PORT,
-    user: process.env.RPC_USER,
-    pass: process.env.RPC_PASS
+    username: process.env.RPC_USER,
+    password: process.env.RPC_PASS
   },
   botspamchannel: process.env.BOT_SPAMCHANNEL
 }

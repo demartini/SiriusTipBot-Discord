@@ -1,11 +1,11 @@
 'use strict'
 
-const bitcoin = require('bitcoin')
+const Client = require('bitcoin-core')
 const config = require('config')
 const spamchannel = config.get('botspamchannel')
 const siriusdConfig = config.get('siriusd')
-const regex = require('regex')
-const sirius = new bitcoin.Client(siriusdConfig)
+const sirius = new Client(siriusdConfig)
+
 const helpmsg = {
   embed: {
     description:
@@ -24,7 +24,7 @@ const helpmsg = {
       '__**FURTHER INFORMATION**__\n\n' +
       '**Help**: `!tip help` *Get this message.\n' +
       'Read our [TipBot FAQ](https://docs.getsirius.io/docs/faq/tipbot-discord) for a more details',
-    color: 1109218
+    color: 6650777
   }
 }
 
@@ -134,6 +134,7 @@ function privateOrSandboxOnly(message, wrongchannelmsg, fn, args) {
     message.reply(wrongchannelmsg)
     return
   }
+  // eslint-disable-next-line no-useless-call
   fn.apply(null, [message, ...args])
 }
 
@@ -147,8 +148,9 @@ function doBalance(message, tipper) {
       message
         .reply('Error getting balance.')
         .then(message => message.delete(5000))
+      console.log(err)
     } else {
-      message.reply(`You have *${balance}* SIRX`)
+      message.reply('You have: **`' + balance + '`** SIRX.')
     }
   })
 }
@@ -159,8 +161,9 @@ function doDeposit(message, tipper) {
       message
         .reply('Error getting your deposit address.')
         .then(message => message.delete(5000))
+      console.log(err)
     } else {
-      message.reply(`Your address is ${address}`)
+      message.reply('Your address is: **`' + address + '`**.')
     }
   })
 }
@@ -182,9 +185,10 @@ function doWithdraw(message, tipper, words, helpmsg) {
 
   sirius.sendFrom(tipper, address, amount, function(err, txId) {
     if (err) {
+      console.log(err)
       return message.reply(err.message).then(message => message.delete(5000))
     }
-    message.reply(`${amount} SIRX has been withdrawn to ${address}.
+    message.reply(`**${amount}** SIRX has been withdrawn to **${address}**.
 ${txLink(txId)}`)
   })
 }
@@ -329,6 +333,7 @@ function sendSIRX(
   getAddress(recipient.toString(), function(err, address) {
     if (err) {
       message.reply(err.message).then(message => message.delete(5000))
+      console.log(err)
     } else {
       sirius.sendFrom(tipper, address, Number(amount), 1, null, null, function(
         err,
@@ -336,6 +341,7 @@ function sendSIRX(
       ) {
         if (err) {
           message.reply(err.message).then(message => message.delete(5000))
+          console.log(err)
         } else {
           let tx = txLink(txId)
           let msgtail = `
@@ -369,12 +375,14 @@ function getAddress(userId, cb) {
   sirius.getAddressesByAccount(userId, function(err, addresses) {
     if (err) {
       cb(err)
+      console.log(err)
     } else if (addresses.length > 0) {
       cb(null, addresses[0])
     } else {
       sirius.getNewAddress(userId, function(err, address) {
         if (err) {
           cb(err)
+          console.log(err)
         } else {
           cb(null, address)
         }
