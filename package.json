@@ -52,7 +52,7 @@
   "dependencies": {
     "bitcoin-core": "^3.0.0",
     "config": "^3.3.6",
-    "discord.js": "^12.5.1",
+    "discord.js": "^12.5.3",
     "dotenv": "^8.2.0",
     "pm2": "^4.5.5",
     "regex": "^0.1.1"
